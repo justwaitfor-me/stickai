@@ -11,11 +11,11 @@ settings:
   debug: true
 
 dqn_agent:
-  learning_rate: 0.1
-  discount_factor: 0.99
+  learning_rate: 0.1    # Reduced for more stable learning
+  discount_factor: 0.95   # Slightly reduced to focus on more immediate rewards
 
   epsilon_initial: 1.0
-  epsilon_decay: 0.9
-  epsilon_min: 0.001
+  epsilon_decay: 1.2    # Slower decay for better exploration
+  epsilon_min: 0.01      # Increased minimum to maintain some exploration
 
   random_train_opponent: 0.7

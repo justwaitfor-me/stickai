@@ -3,7 +3,7 @@ from google.genai import types
 
 from utils import read_file, build_prompt, get_key, parse_ai_response
 
-def player(game:str, round:int, max_sticks:int = 10) -> dict:
+def get_llm_move(game:str, round:int, max_sticks:int = 10) -> dict:
     client = genai.Client(
         api_key=get_key(),
     )
@@ -45,4 +45,9 @@ def player(game:str, round:int, max_sticks:int = 10) -> dict:
         return {"error":"No Ai Output"}
 
 if __name__ == "__main__":
-    print(player(7, 2, 10))
+    # Example usage
+    game = "sticks"
+    round = 1
+    max_sticks = 10
+    ai_move = get_llm_move(game, round, max_sticks)
+    print(ai_move)

@@ -8,6 +8,7 @@ from utils import get_config, debug
 
 from dqn_agent import NimGame
 from dqn_agent import load_nim_agent, evaluate_nim_agent, train_nim_agent, save_nim_agent
+from llm_agent import get_llm_move
 
 def initialize_game():
     global sticks, counter, stick, uid
@@ -48,9 +49,59 @@ def end_game(won:bool, counter:int, uid:str, sticks:int = 0, msg:str = None):
         print("[DEBUG] Game teardown complete.")
 
 def llm_player():
-    clear()
-    print("LLM Player is not implemented yet.")
-    return 
+    global sticks, counter, stick, uid
+    initialize_game()
+    
+    max_sticks = sticks
+    player = None
+    last_explaination = None
+    taken_sticks = ""
+    
+    while True:
+        clear()
+        counter += 1
+        
+        if player is not None:
+            taken_sticks = f" [-{player}]"
+        
+        if last_explaination is not None:
+            print(f"[INFO] AI Explanation: {last_explaination}\n")
+            last_explaination = None
+
+        print(f"Round {counter}")
+        print(f"{stick*sticks} {taken_sticks}")
+
+        try:
+            if counter % 2:
+                player = int(input(f"You: "))
+                last_explaination = None
+            else:
+                ai = get_llm_move(sticks, counter, max_sticks)
+                try:
+                    player = ai.get("sticks_to_take", 0)
+                    last_explaination = ai.get("explanation", "")
+                except KeyError:
+                    print("[ERROR] Invalid AI response format. Please try again.")
+                    counter -= 1
+                    continue
+                
+            player_name = "You" if counter % 2 else "AI"
+            
+            if player < 0 or player > 3:
+                counter -= 1
+                continue
+                
+        except:
+            counter -= 1
+            
+        else:
+            sticks -= player
+            
+        if sticks <= 0:
+            end_game(True, counter, uid, msg=f"{player_name} lost in round {counter}!")
+            break
+        
+            
 
 def dqn_player():
     global sticks, counter, stick, uid
